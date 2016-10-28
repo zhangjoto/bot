@@ -39,10 +39,11 @@ class TelegramApi():
             try:
                 q = requests.post(query_url, data={'offset': self.offset + 1},
                                   proxies=self.proxies)
+                # 防止网络原因导致收到的应答报文不完整
+                resp = json.loads(q.content.decode())
             except Exception as err:
                 self.logger.error(err)
                 continue
-            resp = json.loads(q.content.decode())
             if resp['ok']:
                 for result in resp['result']:
                     mesg = result['message']
