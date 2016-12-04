@@ -58,14 +58,15 @@ def main():
     proxies = {'http': 'socks5://127.0.0.1:9050',
                'https': 'socks5://127.0.0.1:9050'}
     api = bot_api.TelegramApi(token=load_token(), proxies=proxies)
-    for mesg in api.iter_message():
-        if (mesg[0]['first_name'] in ('zhangjoto', 'yarlinghe') and
-                mesg[0]['type'] == 'private'):
-            if mesg[1] in cmds:
-                ret = cmds[mesg[1]]()
+    for meta, mesg  in api.iter_message():
+        if (meta['first_name'] in ('zhangjoto', 'yarlinghe') and
+                meta['type'] == 'private'):
+            mesg = mesg.lower()
+            if mesg in cmds:
+                ret = cmds[mesg]()
             else:
                 ret = 'Invalid command.'
-            api.send_message({'chat_id': mesg[0]['id'], 'text': ret})
+            api.send_message({'chat_id': meta['id'], 'text': ret})
 
 
 if __name__ == '__main__':

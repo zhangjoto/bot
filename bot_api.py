@@ -51,7 +51,7 @@ class TelegramApi():
                     if 'text' in mesg:
                         yield mesg['chat'], mesg['text']
                     # 每条消息更新一次offset，避免出现result未赋值的异常
-                    self.offset = max(self.offset, result['update_id'])
+                    self.offset = result['update_id']
             time.sleep(5)
 
     def send_message(self, mesg):
