@@ -47,7 +47,9 @@ class TelegramApi():
             if resp['ok']:
                 for result in resp['result']:
                     mesg = result['message']
-                    yield mesg['chat'], mesg['text']
+                    # 只处理文本消息，声音图片等消息一概忽略
+                    if 'text' in mesg:
+                        yield mesg['chat'], mesg['text']
                     # 每条消息更新一次offset，避免出现result未赋值的异常
                     self.offset = max(self.offset, result['update_id'])
             time.sleep(5)
