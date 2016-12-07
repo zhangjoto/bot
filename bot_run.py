@@ -19,6 +19,7 @@ def load_token():
     with open('token.txt') as fp:
         return fp.read().strip()
 
+
 def route(cmd):
     def decorate(func):
         cmds[cmd] = func
@@ -32,6 +33,14 @@ def get_external_ip():
     for line in output.decode().splitlines():
         if line.startswith('ExternalIPAddress'):
             return line.split(' = ')[1]
+
+
+@route('stat')
+def get_stat():
+    output1 = subprocess.check_output(['uptime'])
+    output2 = subprocess.check_output(['free', '-m'])
+    # 暂时只取uptime和free的输出，输出格式还需要针对小屏优化
+    return (output1 + output2).decode()
 
 
 @route('open')
@@ -58,7 +67,10 @@ def main():
     proxies = {'http': 'socks5://127.0.0.1:9050',
                'https': 'socks5://127.0.0.1:9050'}
     api = bot_api.TelegramApi(token=load_token(), proxies=proxies)
-    for meta, mesg  in api.iter_message():
+    # 执行指令前指定语言环境，避免输出格式受环境影响，并确保任意终端上正常输出
+    import os
+    os.environ['LC_ALL'] = 'en_US.UTF-8'
+    for meta, mesg in api.iter_message():
         if (meta['first_name'] in ('zhangjoto', 'yarlinghe') and
                 meta['type'] == 'private'):
             mesg = mesg.lower()
