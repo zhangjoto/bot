@@ -63,7 +63,10 @@ def main():
                 meta['type'] == 'private'):
             mesg = mesg.lower()
             if mesg in cmds:
-                ret = cmds[mesg]()
+                try:
+                    ret = cmds[mesg]()
+                except Exception as err:
+                    ret = str(err)
             else:
                 ret = 'Invalid command.'
             api.send_message({'chat_id': meta['id'], 'text': ret})
